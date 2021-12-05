@@ -6,5 +6,6 @@ module Program =
     let main _argv =
 
         Day1.part1 ()
+        Day1.part2 ()
 
         0
