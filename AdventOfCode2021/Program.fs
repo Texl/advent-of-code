@@ -19,5 +19,8 @@ module Program =
         Day2.part1 ()
         header 2 2
         Day2.part2 ()
+
+        header 3 1
+        Day3.part1 ()
         
         0

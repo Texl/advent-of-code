@@ -29,3 +29,12 @@ module Utils =
             while not reader.EndOfStream do
                 yield reader.ReadLine()
         }
+
+
+module List =
+
+    /// Transpose a list of lists - requires all lists to be of the same length.
+    let rec transpose (lists : 'a list list) =
+        match lists with
+        | (_ :: _) :: _ as m -> List.map List.head m :: transpose (List.map List.tail m)
+        | _ -> []
