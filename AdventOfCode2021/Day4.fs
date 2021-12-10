@@ -15,7 +15,7 @@ module Day4 =
         type BingoBoard =
             { Numbers : int list list }
 
-        let (randomNumbers : int list), (bingoBoards : BingoBoard list) =
+        let (initialNumbersRemaining : int list), (bingoBoards : BingoBoard list) =
             let lines =
                 dataFilePath
                 |> Utils.loadTextResource
@@ -124,96 +124,148 @@ module Day4 =
           Lookup : Map<int, Coordinate[]>
           WinCombinations : Map<Coordinate, WinCombination> }
     
+    let initialBoardStates =
+        bingoBoards
+        |> List.mapi (fun boardIdentity bingoBoard ->
+            let lookup =
+                bingoBoard.Numbers
+                |> Seq.collecti (fun h -> Seq.mapi (fun v n -> n, [| Horizontal h; Vertical v |]))
+                |> Map.ofSeq
+           
+            let winCombinations =
+                seq {
+                    yield!
+                        bingoBoard.Numbers
+                        |> Seq.mapi (fun h row ->
+                            Horizontal h,
+                            { Pattern = row |> Set.ofList
+                              State = Set.empty })
+
+                    yield!
+                        bingoBoard.Numbers
+                        |> Seq.transpose
+                        |> Seq.mapi (fun v row ->
+                            Vertical v,
+                            { Pattern = row |> Set.ofSeq
+                              State = Set.empty })
+                }
+                |> Map.ofSeq
+                
+            { Identity = boardIdentity
+              BingoBoard = bingoBoard
+              Lookup = lookup
+              WinCombinations = winCombinations })
+        
+    let processCalledNumber (calledNumber : int) (boardState : BingoBoardState) =
+        match boardState.Lookup |> Map.tryFind calledNumber with
+        | Some coordinates ->
+            (boardState, coordinates)
+            ||> Array.fold (fun boardStateSoFar coordinate ->
+                let newWinCombinations =
+                    let newWinCombination =
+                        let winCombination = boardStateSoFar.WinCombinations.[coordinate]
+                        let newState = winCombination.State.Add calledNumber
+                        { winCombination with State = newState }
+                    boardStateSoFar.WinCombinations.Add (coordinate, newWinCombination) 
+                { boardStateSoFar with WinCombinations = newWinCombinations })
+        | None -> boardState
+    
+    let isWinningBoardState (boardState : BingoBoardState) =
+        boardState.WinCombinations
+        |> Map.toSeq
+        |> Seq.exists (fun (_coordinate, winCombination) -> winCombination.Pattern = winCombination.State)
+
+    let getWinningBoardScore (numbersCalledR : int list) (boardState : BingoBoardState) =
+        let unmarkedNumbers =
+            let allBingoBoardNumbers = boardState.BingoBoard.Numbers |> Seq.collect id |> Set.ofSeq
+            let allNumbersCalled = numbersCalledR |> Set.ofList
+            allBingoBoardNumbers - allNumbersCalled
+        // Score is the sum of unmarkes numbers multiplied by the last called number                         
+        (unmarkedNumbers |> Seq.sum) * numbersCalledR.Head
+        
     let part1 () =
-        
-        let initialBoardStates =
-            bingoBoards
-            |> List.mapi (fun boardIdentity bingoBoard ->
-                let lookup =
-                    bingoBoard.Numbers
-                    |> Seq.collecti (fun h -> Seq.mapi (fun v n -> n, [| Horizontal h; Vertical v |]))
-                    |> Map.ofSeq
-               
-                let winCombinations =
-                    seq {
-                        yield!
-                            bingoBoard.Numbers
-                            |> Seq.mapi (fun h row ->
-                                Horizontal h,
-                                { Pattern = row |> Set.ofList
-                                  State = Set.empty })
 
-                        yield!
-                            bingoBoard.Numbers
-                            |> Seq.transpose
-                            |> Seq.mapi (fun v row ->
-                                Vertical v,
-                                { Pattern = row |> Set.ofSeq
-                                  State = Set.empty })
-                    }
-                    |> Map.ofSeq
-                    
-                { Identity = boardIdentity
-                  BingoBoard = bingoBoard
-                  Lookup = lookup
-                  WinCombinations = winCombinations })
-        
-        let processCalledNumber (calledNumber : int) (boardState : BingoBoardState) =
-            match boardState.Lookup |> Map.tryFind calledNumber with
-            | Some coordinates ->
-                (boardState, coordinates)
-                ||> Array.fold (fun boardStateSoFar coordinate ->
-                    let newWinCombinations =
-                        let newWinCombination =
-                            let winCombination = boardStateSoFar.WinCombinations.[coordinate]
-                            let newState = winCombination.State.Add calledNumber
-                            { winCombination with State = newState }
-                        boardStateSoFar.WinCombinations.Add (coordinate, newWinCombination) 
-                    { boardStateSoFar with WinCombinations = newWinCombinations })
-            | None -> boardState
-        
-        let isWinningBoardState (boardState : BingoBoardState) =
-            boardState.WinCombinations
-            |> Map.toSeq
-            |> Seq.exists (fun (_coordinate, winCombination) -> winCombination.Pattern = winCombination.State)
-
-        let getWinningBoardScore (numbersCalledR : int list) (boardState : BingoBoardState) =
-            let unmarkedNumbers =
-                let allBingoBoardNumbers = boardState.BingoBoard.Numbers |> Seq.collect id |> Set.ofSeq
-                let allNumbersCalled = numbersCalledR |> Set.ofList
-                allBingoBoardNumbers - allNumbersCalled
-            // Score is the sum of unmarkes numbers multiplied by the last called number                         
-            (unmarkedNumbers |> Seq.sum) * numbersCalledR.Head
-        
-        let winningScore, winningBoardState =
-            (initialBoardStates, (randomNumbers, []))
-            |> Seq.unfold (fun (boardStates, (numbersRemaining, numbersCalledR)) ->
-                match numbersRemaining with
-                | number :: newNumbersRemaining ->
+        let firstWinningScore, firstWinningBoardState =
+            (initialBoardStates, (initialNumbersRemaining, []))
+            |> Seq.unfold (fun (boardStatesStillPlaying, (numbersRemaining, numbersCalledR)) ->
+                match boardStatesStillPlaying, numbersRemaining with
+                | _, [] -> failwith "Ran out of numbers to call, but there are boards still playing"
+                | [], _ -> None // end of sequence - no boards are still playing
+                | _, number :: newNumbersRemaining ->
 
                     let newNumbersCalledR = number :: numbersCalledR
                     
-                    // all boards process called number n
+                    // all boards process called number
                     let newBoardStates =
-                        boardStates
+                        boardStatesStillPlaying
+                        |> List.map (processCalledNumber number)
+                    
+                    match newBoardStates |> List.partition isWinningBoardState with
+                    | [], nonWinningBoardStates ->
+                        // No winner yet
+                        let boardStatesStillPlaying = nonWinningBoardStates
+                        Some (None, (boardStatesStillPlaying, (newNumbersRemaining, newNumbersCalledR)))
+ 
+                    | [ firstWinningBoardState ], _nonWinningBoardStates ->
+                        // Found the first winner
+                        let scoreAndWinningBoardState =
+                            let score = getWinningBoardScore newNumbersCalledR firstWinningBoardState
+                            (score, firstWinningBoardState)
+                        let boardStatesStillPlaying = [] // all play stops with the first win
+                        Some (Some scoreAndWinningBoardState, (boardStatesStillPlaying, (newNumbersRemaining, newNumbersCalledR)))
+ 
+                    | winningBoardStates, _ ->
+                        failwith $"{winningBoardStates.Length} first winners - unexpected condition?")
+            |> Seq.choose id
+            |> Seq.tryExactlyOne
+            |> Option.defaultWith (fun () -> failwith "No winner - unexpected condition?")
+
+        printfn $"First winning board is ID {firstWinningBoardState.Identity}, with a score of {firstWinningScore}"
+
+//    On the other hand, it might be wise to try a different strategy: let the giant squid win.
+//
+//    You aren't sure how many bingo boards a giant squid could play at once, so rather than waste time counting its arms, the safe thing to do is to figure out which board will win last and choose that one. That way, no matter which boards it picks, it will win for sure.
+//
+//    In the above example, the second board is the last to win, which happens after 13 is eventually called and its middle column is completely marked. If you were to keep playing until this point, the second board would have a sum of unmarked numbers equal to 148 for a final score of 148 * 13 = 1924.
+//
+//    Figure out which board will win last. Once it wins, what would its final score be?
+
+    let part2 () =
+
+        let lastWinningScore, lastWinningBoardState =
+            (initialBoardStates, (initialNumbersRemaining, [], []))
+            |> Seq.unfold (fun (boardStatesStillPlaying, (numbersRemaining, numbersCalledR, winningBoardStatesR)) ->
+                match boardStatesStillPlaying, numbersRemaining with
+                | _, [] -> failwith "Ran out of numbers to call, but there are boards still playing"
+                | [], _ -> None // end of sequence - no boards are still playing
+                | _, number :: newNumbersRemaining ->
+
+                    let newNumbersCalledR = number :: numbersCalledR
+                    
+                    // all boards process called number
+                    let newBoardStates =
+                        boardStatesStillPlaying
                         |> List.map (processCalledNumber number)
 
-                    // detect winning board. If one exists, return an empty numbersLeftToProcess to end the unfold on the next iteration.  
-                    let maybeWinningScoreAndBoardState, numbersLeftToProcess =
-                        match newBoardStates |> List.filter isWinningBoardState with
-                        | [] -> None, newNumbersRemaining
-                        | [ winningBoardState ] -> Some (getWinningBoardScore newNumbersCalledR winningBoardState, winningBoardState), []
-                        | _ -> failwith "Multiple winners - unexpected condition?"
-                    
-                    Some (maybeWinningScoreAndBoardState, (newBoardStates, (numbersLeftToProcess, newNumbersCalledR)))
-                | [] -> None)
+                    // pull out boards that just won
+                    match newBoardStates |> List.partition isWinningBoardState with
+                    | [ lastWinningBoardState ], [] ->
+                        // Found one last winner
+                        let score =  getWinningBoardScore newNumbersCalledR lastWinningBoardState
+                        let win = Some (score, lastWinningBoardState)
+                        let boardStatesStillPlaying = [] // all play stops with the first win
+                        Some (win, (boardStatesStillPlaying, (newNumbersRemaining, newNumbersCalledR, lastWinningBoardState :: winningBoardStatesR)))
+
+                    | _, [] ->
+                        failwith "Found multiple last winners - unexpected condition?"
+
+                    | winningBoardStates, nonWinningBoardStates ->
+                        // 0-N winners with some number of nonwinners remaining
+                        let boardStatesStillPlaying = nonWinningBoardStates
+                        Some (None, (boardStatesStillPlaying, (newNumbersRemaining, newNumbersCalledR, winningBoardStates @ winningBoardStatesR))))
             // Cull the leading Nones
             |> Seq.choose id
             |> Seq.tryExactlyOne
             |> Option.defaultWith (fun () -> failwith "No winner - unexpected condition?")
 
-        printfn $"Winning board ID: {winningBoardState.Identity}"
-        printfn $"Winning board score: {winningScore}"
-        printfn $"Winning board state: %A{winningBoardState}"
-
-        ()
+        printfn $"First winning board is ID {lastWinningBoardState.Identity}, with a score of {lastWinningScore}"
