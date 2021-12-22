@@ -27,11 +27,12 @@ module Program =
         
         header 4 1
         Day4.part1 ()
-
         header 4 2
         Day4.part2 ()
         
         header 5 1
         Day5.part1 ()
+        header 5 2
+        Day5.part2 ()
 
         0

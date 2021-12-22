@@ -45,6 +45,22 @@ module Day5 =
             |> Seq.map parseLine
             |> Array.ofSeq
 
+        let lines2 =
+            seq {
+                "0,9 -> 5,9"
+                "8,0 -> 0,8"
+                "9,4 -> 3,4"
+                "2,2 -> 2,1"
+                "7,0 -> 7,4"
+                "6,4 -> 2,0"
+                "0,9 -> 2,9"
+                "3,4 -> 1,4"
+                "0,0 -> 8,8"
+                "5,5 -> 8,2"
+            }
+            |> Seq.map parseLine
+            |> Array.ofSeq
+
 //    --- Day 5: Hydrothermal Venture ---
 //
 //    You come across a field of hydrothermal vents on the ocean floor! These vents constantly produce large, opaque clouds, so it would be best to avoid them if possible.
@@ -88,20 +104,25 @@ module Day5 =
 //
 //    Consider only horizontal and vertical lines. At how many points do at least two lines overlap?
 
+    let pointsInLine (line : Line) =
+        match line.P2.X - line.P1.X, line.P2.Y - line.P1.Y with
+        | 0, 0 -> [ line.P1 ]
+        | dx, 0 -> [ for x = 0 to abs dx do { X = line.P1.X + x * sign dx; Y = line.P1.Y } ] // horizontal
+        | 0, dy -> [ for y = 0 to abs dy do { X = line.P1.X; Y = line.P1.Y + y * sign dy } ] // vertical
+        | dx, dy -> [ for x = 0 to abs dx do { X = line.P1.X + x * sign dx; Y = line.P1.Y + x * sign dx * dy / dx } ] // general line - can assume 45 degrees, so integer math is fine
+    
+    let getPointToOverlap (lines : #seq<Line>) =
+        (Map.empty, lines)
+        ||> Seq.fold (fun s n ->
+            let points = pointsInLine n
+            (s, points)
+            ||> List.fold (fun s2 n2 ->
+                match s2 |> Map.tryFind n2 with
+                | Some v -> s2 |> Map.add n2 (v + 1)
+                | None -> s2 |> Map.add n2 1))
+
     let part1 () =
         
-        let pointsInLine (line : Line) =
-            match line.P2.X - line.P1.X, line.P2.Y - line.P1.Y with
-            | 0, 0 -> [ line.P1 ]
-            | dx, 0 -> [ for x = 0 to abs dx do { X = line.P1.X + x * sign dx; Y = line.P1.Y } ] // horizontal
-            | 0, dy -> [ for y = 0 to abs dy do { X = line.P1.X; Y = line.P1.Y + y * sign dy } ] // vertical
-            | dx, dy ->
-                // general line - not used yet
-                failwith "not yet used"
-                let slope = decimal dy / decimal dx
-                let f x = int (decimal (x * sign dx) * slope) // y = m * x
-                [ for x = 0 to abs dx do { X = line.P1.X + x; Y = line.P1.Y + f x } ]
-
         let horizontalsAndVerticals =
             lines
             |> Seq.filter (fun line ->
@@ -111,15 +132,45 @@ module Day5 =
                 | 0, _ -> true
                 | _, _ -> false)
         
-        let pointToOverlap =
-            (Map.empty, horizontalsAndVerticals)
-            ||> Seq.fold (fun s n ->
-                let points = pointsInLine n
-                (s, points)
-                ||> List.fold (fun s2 n2 ->
-                    match s2 |> Map.tryFind n2 with
-                    | Some v -> s2 |> Map.add n2 (v + 1)
-                    | None -> s2 |> Map.add n2 1))
+        let pointToOverlap = getPointToOverlap horizontalsAndVerticals
+
+        let pointsWithOverlap2Plus =
+            pointToOverlap
+            |> Map.filter (fun _k v -> v > 1)
+            |> Map.toSeq
+            |> Seq.length
+            
+        printfn $"{pointsWithOverlap2Plus}"
+
+//    --- Part Two ---
+//
+//    Unfortunately, considering only horizontal and vertical lines doesn't give you the full picture; you need to also consider diagonal lines.
+//
+//    Because of the limits of the hydrothermal vent mapping system, the lines in your list will only ever be horizontal, vertical, or a diagonal line at exactly 45 degrees. In other words:
+//
+//        An entry like 1,1 -> 3,3 covers points 1,1, 2,2, and 3,3.
+//        An entry like 9,7 -> 7,9 covers points 9,7, 8,8, and 7,9.
+//
+//    Considering all lines from the above example would now produce the following diagram:
+//
+//    1.1....11.
+//    .111...2..
+//    ..2.1.111.
+//    ...1.2.2..
+//    .112313211
+//    ...1.2....
+//    ..1...1...
+//    .1.....1..
+//    1.......1.
+//    222111....
+//
+//    You still need to determine the number of points where at least two lines overlap. In the above example, this is still anywhere in the diagram with a 2 or larger - now a total of 12 points.
+//
+//    Consider all of the lines. At how many points do at least two lines overlap?
+
+    let part2 () =
+        
+        let pointToOverlap = getPointToOverlap lines
 
         let pointsWithOverlap2Plus =
             pointToOverlap
