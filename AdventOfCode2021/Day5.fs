@@ -1,5 +1,7 @@
 ﻿namespace AdventOfCode2021
 
+open AdventOfCode.Common
+
 // https://adventofcode.com/2021/day/5
 
 module Day5 =

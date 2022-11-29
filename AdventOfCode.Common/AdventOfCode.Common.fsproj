@@ -1,0 +1,12 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+   <PropertyGroup>
+      <TargetFramework>net5.0</TargetFramework>
+      <RootNamespace>Common</RootNamespace>
+   </PropertyGroup>
+
+   <ItemGroup>
+      <Compile Include="Utils.fs" />
+   </ItemGroup>
+
+</Project>

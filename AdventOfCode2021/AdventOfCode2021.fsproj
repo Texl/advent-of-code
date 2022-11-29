@@ -10,13 +10,16 @@
     </ItemGroup>
     
     <ItemGroup>
-        <Compile Include="Utils.fs" />
         <Compile Include="Day1.fs" />
         <Compile Include="Day2.fs" />
         <Compile Include="Day3.fs" />
         <Compile Include="Day4.fs" />
         <Compile Include="Day5.fs" />
         <Compile Include="Program.fs" />
+    </ItemGroup>
+    
+    <ItemGroup>
+      <ProjectReference Include="..\AdventOfCode.Common\AdventOfCode.Common.fsproj" />
     </ItemGroup>
 
 </Project>
