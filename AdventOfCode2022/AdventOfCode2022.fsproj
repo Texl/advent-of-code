@@ -6,10 +6,12 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <EmbeddedResource Include="Data\*.data" />
+        <EmbeddedResource Include="Data\**\*" />
     </ItemGroup>
     
     <ItemGroup>
+        <None Include="Day01\Day01.md" />
+        <Compile Include="Day01\Day01.fs" />
         <Compile Include="Program.fs" />
     </ItemGroup>
     
