@@ -20,7 +20,7 @@ module Day4 =
         let (initialNumbersRemaining : int list), (bingoBoards : BingoBoard list) =
             let lines =
                 dataFilePath
-                |> Utils.loadTextResource
+                |> EmbeddedResource.loadText
                 |> List.ofSeq
                 
             let randomSequence =

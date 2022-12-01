@@ -9,7 +9,7 @@
       <Compile Include="Pervasives.fs" />
       <Compile Include="Seq.fs" />
       <Compile Include="List.fs" />
-      <Compile Include="Utils.fs" />
+      <Compile Include="EmbeddedResource.fs" />
    </ItemGroup>
 
 </Project>

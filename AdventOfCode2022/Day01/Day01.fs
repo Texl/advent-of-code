@@ -4,7 +4,7 @@ open AdventOfCode.Common
 
 module Day01 =
     
-    let data = Utils.loadTextResource "Data/Day01.txt"
+    let data = EmbeddedResource.loadText "Data/Day01.txt"
 
     let elfInventories =
         data

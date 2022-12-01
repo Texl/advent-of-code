@@ -56,7 +56,7 @@ module Day1 =
 
     let depths =
         dataFilePath
-        |> Utils.loadTextResource
+        |> EmbeddedResource.loadText
         |> Seq.map int
 
     let part1 () =

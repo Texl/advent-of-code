@@ -1,13 +1,13 @@
 ﻿namespace AdventOfCode.Common
 
-module Utils =
+module EmbeddedResource =
 
     open System
     open System.IO
     open System.Reflection
     
     /// Load a text resource embedded in the calling assembly specifed by the relative path from the assembly's project root. 
-    let loadTextResource (relativeResourcePath : string) : seq<string> =
+    let loadText (relativeResourcePath : string) : seq<string> =
 
         // Resource names replace directory separators with periods
         let resourceNameEnd = relativeResourcePath.Replace('\\', '.').Replace('/', '.')

@@ -54,7 +54,7 @@ module Day3 =
 
     let codes =
         dataFilePath
-        |> Utils.loadTextResource
+        |> EmbeddedResource.loadText
         |> Seq.map parseCode
             
     let part1 () =

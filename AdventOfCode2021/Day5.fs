@@ -43,7 +43,7 @@ module Day5 =
             
         let lines =
             dataFilePath
-            |> Utils.loadTextResource
+            |> EmbeddedResource.loadText
             |> Seq.map parseLine
             |> Array.ofSeq
 

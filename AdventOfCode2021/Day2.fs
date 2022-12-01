@@ -66,7 +66,7 @@ module Day2 =
         
     let commands =
         dataFilePath
-        |> Utils.loadTextResource
+        |> EmbeddedResource.loadText
         |> Seq.map parseCommand
 
     module private Part1 =
