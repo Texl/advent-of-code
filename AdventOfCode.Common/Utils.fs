@@ -29,19 +29,3 @@ module Utils =
             while not reader.EndOfStream do
                 yield reader.ReadLine()
         }
-
-
-// I realized on day 4 that List.transpose already exists - leaving this here for posterity. Knowing how to write it proved helpful in solving day 3, at least...  
-//module List =
-//
-//        /// Transpose a list of lists - requires all lists to be of the same length.
-//    let rec transpose (lists : 'a list list) =
-//        match lists with
-//        | (_ :: _) :: _ as m -> List.map List.head m :: transpose (List.map List.tail m)
-//        | _ -> []
-
-
-module Seq =
-
-    // Not optimized, but meh
-    let collecti f = Seq.indexed >> Seq.collect (fun (ord, x) -> f ord x)

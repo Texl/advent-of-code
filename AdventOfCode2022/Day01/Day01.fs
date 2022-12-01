@@ -2,26 +2,6 @@ namespace AdventOfCode2022
 
 open AdventOfCode.Common
 
-[<AutoOpen>]
-module Pervasives =
-    let mapFst f (a, b) = f a, b
-    let mapSnd f (a, b) = a, f b
-
-
-[<RequireQualifiedAccess>]
-module List =
-    let split pred xs =
-        let f elt (acc, buf) =
-            match pred elt, buf with
-            | false, buf -> acc, elt :: buf
-            | true, [] -> acc, []
-            | true, buf -> buf :: acc, []
-            
-        match (xs, ([], [])) ||> Seq.foldBack f with
-        | acc, [] -> acc
-        | acc, buf -> buf :: acc
-
-
 module Day01 =
     
     let data = Utils.loadTextResource "Data/Day01.txt"

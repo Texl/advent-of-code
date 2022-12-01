@@ -6,6 +6,9 @@
    </PropertyGroup>
 
    <ItemGroup>
+      <Compile Include="Pervasives.fs" />
+      <Compile Include="Seq.fs" />
+      <Compile Include="List.fs" />
       <Compile Include="Utils.fs" />
    </ItemGroup>
 
