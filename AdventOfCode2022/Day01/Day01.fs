@@ -2,6 +2,12 @@ namespace AdventOfCode2022
 
 open AdventOfCode.Common
 
+[<AutoOpen>]
+module Pervasives =
+    let mapFst f (a, b) = f a, b
+    let mapSnd f (a, b) = a, f b
+
+
 [<RequireQualifiedAccess>]
 module List =
     let split pred xs =
@@ -20,17 +26,36 @@ module Day01 =
     
     let data = Utils.loadTextResource "Data/Day01.txt"
 
+    let elfInventories =
+        data
+        |> List.ofSeq
+        |> List.split (fun s -> s = "")
+        |> List.map (List.map int)
+        |> List.mapi (fun ord inventory ->
+            {| Index = ord
+               Inventory = inventory
+               Sum = inventory |> List.sum |})
+        
     let part1 () =
 
-        let elfInventories =
-            data
-            |> List.ofSeq
-            |> List.split (fun s -> s = "")
-            |> List.map (List.map int)
-        
-        let index, biggest =
+        let top1 =
             elfInventories
-            |> List.indexed
-            |> List.maxBy (snd >> List.sum) 
+            |> List.maxBy (fun elt -> elt.Sum) 
 
-        printfn $"elf index {index} has the biggest total: {biggest |> List.sum} (%A{biggest})"
+        printfn $"elf {top1.Index} is carrying the most - {top1.Sum} calories (%A{top1.Inventory})"
+
+    let part2 () =
+
+        let top3 =
+            elfInventories
+            |> List.sortByDescending (fun elt -> elt.Sum)
+            |> List.truncate 3
+
+        let top3Sum = top3 |> List.sumBy (fun elt -> elt.Sum)
+
+        printfn "top3:"
+        top3
+        |> List.iter (fun elt ->
+            printfn $"   elf %3d{elt.Index} is carrying %5d{elt.Sum} calories (%A{elt.Inventory})")
+        printfn ""
+        printfn $"top3 is carrying {top3Sum} calories in total."

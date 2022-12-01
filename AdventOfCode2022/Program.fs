@@ -9,3 +9,5 @@ printfn "Advent of Code 2022"
 header 1 1
 Day01.part1 ()
 
+header 1 2
+Day01.part2 ()
