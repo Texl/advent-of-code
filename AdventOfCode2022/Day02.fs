@@ -6,33 +6,59 @@ open AdventOfCode.Common
 module Day02 =
     
     let data = EmbeddedResource.loadText "Data/Day02.txt"
-
-    let part1 () =
+    
+    let rounds =
         data
-        |> Seq.sumBy (function
-            | "A X" -> 1 + 3
-            | "A Y" -> 2 + 6
-            | "A Z" -> 3 + 0
-            | "B X" -> 1 + 0
-            | "B Y" -> 2 + 3
-            | "B Z" -> 3 + 6
-            | "C X" -> 1 + 6
-            | "C Y" -> 2 + 0
-            | "C Z" -> 3 + 3
-            | junk -> failwith $"malformed input: {junk}")
+        |> Seq.map (fun str -> let arr = str.ToCharArray() in arr[0], arr[2])
+        |> List.ofSeq
+
+    type Shape =
+        Rock | Paper | Scissors
+        member this.Score = match this with Rock -> 1 | Paper -> 2 | Scissors -> 3
+
+    type RoundResult =
+        P1Win | Draw | P2Win
+        member this.Score = match this with | P1Win -> 0 | Draw -> 3 | P2Win -> 6
+        
+    let roundOutcomes =
+        [ Rock, Rock, Draw
+          Rock, Paper, P2Win
+          Rock, Scissors, P1Win
+          Paper, Rock, P1Win
+          Paper, Paper, Draw
+          Paper, Scissors, P2Win
+          Scissors, Rock, P2Win
+          Scissors, Paper, P1Win
+          Scissors, Scissors, Draw ]
+
+    let getResult = roundOutcomes |> List.map (fun (p1, p2, r) -> (p1, p2), r) |> Map.ofSeq |> flip Map.find
+            
+    let getP2 = roundOutcomes |> Seq.map (fun (p1, p2, r) -> (p1, r), p2) |> Map.ofSeq |> flip Map.find
+
+    let (|Shape|) =
+        function
+        | 'A' | 'X' -> Rock
+        | 'B' | 'Y' -> Paper
+        | 'C' | 'Z' -> Scissors
+        | junk -> failwith $"malformed input: {junk}"
+        
+    let (|Result|) =
+        function
+        | 'X' -> P1Win
+        | 'Y' -> Draw
+        | 'Z' -> P2Win
+        | junk -> failwith $"malformed input: {junk}"
+    
+    let part1 () =
+        rounds
+        |> Seq.sumBy (fun (Shape p1, Shape p2) ->
+            let r = getResult (p1, p2)
+            p2.Score + r.Score) 
         |> printfn "%d"
 
     let part2 () =
-        data
-        |> Seq.sumBy (function
-            | "A X" -> 3 + 0
-            | "A Y" -> 1 + 3
-            | "A Z" -> 2 + 6
-            | "B X" -> 1 + 0
-            | "B Y" -> 2 + 3
-            | "B Z" -> 3 + 6
-            | "C X" -> 2 + 0
-            | "C Y" -> 3 + 3
-            | "C Z" -> 1 + 6
-            | junk -> failwith $"malformed input: {junk}")
+        rounds
+        |> Seq.sumBy (fun (Shape p1, Result r) ->
+            let p2 = getP2 (p1, r)
+            p2.Score + r.Score)
         |> printfn "%d"
