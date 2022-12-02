@@ -2,6 +2,7 @@ namespace AdventOfCode2022
 
 open AdventOfCode.Common
 
+/// https://adventofcode.com/2022/day/1
 module Day01 =
     
     let data = EmbeddedResource.loadText "Data/Day01.txt"

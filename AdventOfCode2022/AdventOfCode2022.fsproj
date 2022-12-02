@@ -10,8 +10,8 @@
     </ItemGroup>
     
     <ItemGroup>
-        <None Include="Day01\Day01.md" />
-        <Compile Include="Day01\Day01.fs" />
+        <Compile Include="Day01.fs" />
+        <Compile Include="Day02.fs" />
         <Compile Include="Program.fs" />
     </ItemGroup>
     

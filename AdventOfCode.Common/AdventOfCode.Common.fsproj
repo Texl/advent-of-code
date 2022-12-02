@@ -10,6 +10,7 @@
       <Compile Include="Seq.fs" />
       <Compile Include="List.fs" />
       <Compile Include="EmbeddedResource.fs" />
+      <Compile Include="Runner.fs" />
    </ItemGroup>
 
 </Project>
