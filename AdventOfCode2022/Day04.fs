@@ -14,7 +14,7 @@ module Day04 =
     let circlePairs =
         data
         |> Seq.map (function
-            | Regex "(\d*)-(\d*),(\d*)-(\d*)" [ I32 x1; I32 x2; I32 y1; I32 y2 ] ->
+            | Regex "(\d*)-(\d*),(\d*)-(\d*)" [ Int x1; Int x2; Int y1; Int y2 ] ->
                 // scaled 2x
                 { Center = x1 + x2; Radius = x2 - x1 },
                 { Center = y1 + y2; Radius = y2 - y1 } 
