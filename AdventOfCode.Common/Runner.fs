@@ -1,6 +1,7 @@
 namespace AdventOfCode.Common
 
 module Runner =
+   open System.Diagnostics
    open System.Reflection
    
    module private Internals =
@@ -41,7 +42,9 @@ module Runner =
 
       let runPart (part : Part) =
          printfn $"\nDay {part.Day}, Part {part.Part}"
+         let stopwatch = Stopwatch.StartNew()
          part.Run.Invoke()
+         printfn $"{stopwatch.ElapsedMilliseconds}ms"
       
       let runDay (day : Day) =
          day.Parts

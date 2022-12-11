@@ -1,7 +1,7 @@
 ﻿namespace AdventOfCode.Common
 
 [<RequireQualifiedAccess>]
-module List =
+module Array =
     let split pred (xs : #seq<'a>) =
         let f elt (acc, buf) =
             match pred elt, buf with
@@ -12,3 +12,5 @@ module List =
         match (xs, ([], [])) ||> Seq.foldBack f with
         | acc, [] -> acc
         | acc, buf -> buf :: acc
+        |> Seq.map Array.ofList
+        |> Array.ofSeq

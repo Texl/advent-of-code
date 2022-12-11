@@ -1,0 +1,50 @@
+﻿namespace AdventOfCode.Common
+
+[<RequireQualifiedAccess>]
+module TryParse =
+    open System.Text.RegularExpressions
+
+    let private tryParseWith f s =
+        match f (string s) with
+        | true, v -> Some v
+        | _ -> None
+
+    let uint8 s = tryParseWith FSharp.Core.uint8.TryParse s
+    let uint16 s = tryParseWith FSharp.Core.uint16.TryParse s
+    let uint s = tryParseWith FSharp.Core.uint.TryParse s
+    let uint64 s = tryParseWith FSharp.Core.uint64.TryParse s
+    let int8 s = tryParseWith FSharp.Core.int8.TryParse s
+    let int16 s = tryParseWith FSharp.Core.int16.TryParse s
+    let int s = tryParseWith FSharp.Core.int.TryParse s
+    let int64 s = tryParseWith FSharp.Core.int64.TryParse s
+    let bigint s = tryParseWith FSharp.Core.bigint.TryParse s
+    let float32 s = tryParseWith FSharp.Core.float32.TryParse s
+    let float s = tryParseWith FSharp.Core.float.TryParse s
+    let decimal s = tryParseWith FSharp.Core.decimal.TryParse s
+    let regex pattern s =
+        let m = Regex.Match(s, pattern)
+        if m.Success
+        then Some (m.Groups |> Seq.map (fun g -> g.Value) |> Seq.tail |> List.ofSeq)
+        else None
+
+
+[<AutoOpen>]
+module TryParseAPs =
+    let (|Uint8|_|) s : uint8 option = TryParse.uint8 s
+    let (|Uint16|_|) s : uint16 option = TryParse.uint16 s
+    let (|Uint|_|) s : uint option = TryParse.uint s
+    let (|Uint64|_|) s : uint64 option = TryParse.uint64 s
+    let (|Int8|_|) s : int8 option = TryParse.int8 s
+    let (|Int16|_|) s : int16 option = TryParse.int16 s
+    let (|Int|_|) s : int option = TryParse.int s
+    let (|Int64|_|) s : int64 option = TryParse.int64 s
+    let (|BigInt|_|) s : bigint option = TryParse.bigint s
+    let (|Float32|_|) s : float32 option = TryParse.float32 s
+    let (|Float|_|) s : float option = TryParse.float s
+    let (|Decimal|_|) s : decimal option = TryParse.decimal s
+    let (|Regex|_|) (pattern : string) s : string list option = TryParse.regex pattern s
+
+    let (|StartsWith|_|) (prefix : string) (s : string) : string option =
+        if s.StartsWith prefix
+        then Some <| s.Substring(prefix.Length)
+        else None
