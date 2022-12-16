@@ -12,3 +12,5 @@ module String =
     let replace (target: string) (replacement: string) (str: string) = str.Replace(target, replacement)
 
     let split (str: string) (separator: string) = str.Split(separator)
+    
+    let trim (str : string) = str.Trim()
