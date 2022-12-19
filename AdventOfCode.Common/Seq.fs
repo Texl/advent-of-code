@@ -30,3 +30,9 @@ module Seq =
         let cached = source |> cache2
         cached |> ReadPoint.toSeq |> Seq.map fst,
         cached |> ReadPoint.toSeq |> Seq.map snd
+
+    let unzip3 (source: seq<'a * 'b * 'c>) : seq<'a> * seq<'b> * seq<'c> =
+        let cached = source |> cache2
+        cached |> ReadPoint.toSeq |> Seq.map (fun (a, _, _) -> a),
+        cached |> ReadPoint.toSeq |> Seq.map (fun (_, b, _) -> b),
+        cached |> ReadPoint.toSeq |> Seq.map (fun (_, _, c) -> c)
