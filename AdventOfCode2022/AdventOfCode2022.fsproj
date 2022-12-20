@@ -5,6 +5,10 @@
         <TargetFramework>net5.0</TargetFramework>
     </PropertyGroup>
 
+    <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
+      <TailCalls>true</TailCalls>
+    </PropertyGroup>
+
     <ItemGroup>
         <EmbeddedResource Include="Data\**\*" />
     </ItemGroup>
@@ -28,6 +32,7 @@
         <Compile Include="Day16.fs" />
         <Compile Include="Day17.fs" />
         <Compile Include="Day18.fs" />
+        <Compile Include="Day19.fs" />
         <Compile Include="Program.fs" />
     </ItemGroup>
     
