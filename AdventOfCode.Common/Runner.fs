@@ -19,8 +19,14 @@ module Runner =
 
       type Day =
          { Day : int
+           Prewarm : DRun option
            Parts : Part list }
 
+      let tryGetPrewarm (t : Type) =
+         t.GetMethod($"prewarm", BindingFlags.Public ||| BindingFlags.Static)
+         |> Option.ofObj
+         |> Option.map (fun methodInfo -> methodInfo.CreateDelegate<DRun>()) 
+      
       let tryGetPart (t : Type) (day : int) (part : int) : Part option =
          t.GetMethod($"part{part}", BindingFlags.Public ||| BindingFlags.Static)
          |> Option.ofObj
@@ -34,12 +40,19 @@ module Runner =
          |> Seq.tryFind (fun t -> t.Name = $"Day%02d{day}" || t.Name = $"Day%d{day}")
          |> Option.map (fun t ->
             { Day = day
+              Prewarm = tryGetPrewarm t
               Parts = [ 1 .. maxPart ] |> List.choose (tryGetPart t day) })
 
       let getDays (assembly : Assembly) =
          [ 1 .. maxDay ]
          |> List.choose (tryGetDay assembly)
 
+      let runPrewarm day (prewarm : DRun) =
+         printfn $"\nDay {day} prewarm"
+         let stopwatch = Stopwatch.StartNew()
+         prewarm.Invoke()
+         printfn $"{stopwatch.ElapsedMilliseconds}ms"
+      
       let runPart (part : Part) =
          printfn $"\nDay {part.Day}, Part {part.Part}"
          let stopwatch = Stopwatch.StartNew()
@@ -47,6 +60,8 @@ module Runner =
          printfn $"{stopwatch.ElapsedMilliseconds}ms"
       
       let runDay (day : Day) =
+         day.Prewarm
+         |> Option.iter (runPrewarm day.Day)
          day.Parts
          |> List.iter runPart
    
