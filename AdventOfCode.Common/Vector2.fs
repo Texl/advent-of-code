@@ -5,6 +5,8 @@ module Vector2Types =
     type Vector2 =
         { R : int64
           C : int64 }
+        member this.ToTuple () =
+            this.R, this.C
         static member Zero =
             { R = 0
               C = 0 }
