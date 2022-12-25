@@ -16,3 +16,6 @@ module Vector2Types =
         static member (-) (a : Vector2, b : Vector2) =
             { R = a.R - b.R
               C = a.C - b.C }
+        static member (*) (a : Vector2, b : int64) =
+            { R = a.R * b
+              C = a.C * b }

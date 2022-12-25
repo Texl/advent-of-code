@@ -6,11 +6,25 @@ module OptionCE =
 
     type OptionCEBuilder() =
         member _.Bind(v, f) = Option.bind f v
+        member _.Combine (a, b) = Option.orElse b a
+        member _.Delay f = f ()
         member _.Return x = Some x
         member _.ReturnFrom x = x
         member _.Zero() = None
 
     let opt = OptionCEBuilder()
+
+
+[<AutoOpen>]
+module ValueOptionCE =
+
+    type ValueOptionCEBuilder() =
+        member _.Bind(v, f) = ValueOption.bind f v
+        member _.Return x = ValueSome x
+        member _.ReturnFrom x = x
+        member _.Zero() = ValueNone
+
+    let vopt = ValueOptionCEBuilder()
 
 
 [<RequireQualifiedAccess>]

@@ -1,17 +1,18 @@
 namespace AdventOfCode.Common
 
+open Microsoft.FSharp.Core
+
 module Runner =
+   open System
    open System.Diagnostics
    open System.Reflection
    
    module private Internals =
-      open System
-
       let maxDay = 30
       let maxPart = 5
       
       type DRun = delegate of unit -> unit
-      
+
       type Part =
          { Day : int
            Part : int
@@ -27,14 +28,55 @@ module Runner =
          |> Option.ofObj
          |> Option.map (fun methodInfo -> methodInfo.CreateDelegate<DRun>()) 
       
+      type DGetResult = delegate of unit -> obj
+      
       let tryGetPart (t : Type) (day : int) (part : int) : Part option =
-         t.GetMethod($"part{part}", BindingFlags.Public ||| BindingFlags.Static)
-         |> Option.ofObj
-         |> Option.map (fun methodInfo ->
-            { Day = day
-              Part = part
-              Run = methodInfo.CreateDelegate<DRun>() }) 
-         
+         opt {
+            let! run =
+               opt {
+                  let! methodInfo = t.GetMethod($"part{part}", BindingFlags.Public ||| BindingFlags.Static) |> Option.ofObj
+                  
+                  if methodInfo.ReturnType = typeof<Void> then
+                     return methodInfo.CreateDelegate<DRun>()
+                  else
+                     return
+                        opt {
+                           let getResult () = methodInfo.Invoke((), [||])
+                           
+                           let getExpectedResult =
+                              opt {
+                                 let! propertyInfo = t.GetProperty($"part{part}Expected", BindingFlags.Public ||| BindingFlags.Static) |> Option.ofObj
+                                 
+                                 if propertyInfo.PropertyType = methodInfo.ReturnType then
+                                    return fun () -> propertyInfo.GetValue(null)
+                              } 
+
+                           return
+                              DRun(fun () ->
+                                 let result = getResult ()
+
+                                 getExpectedResult
+                                 |> Option.iter (fun f ->
+                                    let expectedResult = f ()
+                                    if result.Equals(expectedResult) then
+                                       Console.ForegroundColor <- ConsoleColor.Green
+                                       printf "OK "
+                                    else
+                                       Console.ForegroundColor <- ConsoleColor.Red
+                                       printf "X "
+                                    Console.ResetColor())
+
+                                 printfn $"%A{result}")
+                        }
+                        |> Option.defaultWith (fun () -> failwith $"couldn't create delegate for day {day} part {part}")
+               }
+
+            return            
+               { Day = day
+                 Part = part
+                 Run = run }
+         }
+
       let tryGetDay (assembly : Assembly) (day : int) : Day option =
          assembly.GetTypes()
          |> Seq.tryFind (fun t -> t.Name = $"Day%02d{day}" || t.Name = $"Day%d{day}")

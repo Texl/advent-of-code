@@ -12,3 +12,17 @@ module Pervasives =
     let mapSnd f (a, b) = a, f b
     
     let inline konst _ v = v
+
+[<AutoOpen>]
+module Math =
+    let inline modulo a b = (a % b + b) % b
+
+    // greatest common divisor
+    let rec gcd a b =
+        if b = 0L
+        then a
+        else gcd b (a % b)
+        
+    // least common multiple
+    let inline lcm a b = a * b / gcd a b
+           
