@@ -4,7 +4,7 @@ open AdventOfCode.Common
 
 // https://adventofcode.com/2021/day/4
 
-module Day4 =
+module Day04 =
 
     [<AutoOpen>]
     module Day4Data =
@@ -12,7 +12,7 @@ module Day4 =
         open System
         open System.Text.RegularExpressions
 
-        let dataFilePath = "Data/Day4.data"
+        let dataFilePath = "Data/Day04.txt"
 
         type BingoBoard =
             { Numbers : int list list }

@@ -1,27 +1,27 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
-   <PropertyGroup>
-      <TargetFramework>net5.0</TargetFramework>
-      <RootNamespace>Common</RootNamespace>
-   </PropertyGroup>
+  <PropertyGroup>
+    <TargetFramework>net7.0</TargetFramework>
+    <RootNamespace>Common</RootNamespace>
+  </PropertyGroup>
 
-   <ItemGroup>
-      <Compile Include="Pervasives.fs" />
-      <Compile Include="Option.fs" />
-      <Compile Include="Dict.fs" />
-      <Compile Include="ReadPoint.fs" />
-      <Compile Include="Seq.fs" />
-      <Compile Include="Array.fs" />
-      <Compile Include="List.fs" />
-      <Compile Include="String.fs" />
-      <Compile Include="Vector2.fs" />
-      <Compile Include="Vector3.fs" />
-      <Compile Include="Vector4.fs" />
-      <Compile Include="TryParse.fs" />
-      <Compile Include="Parse.fs" />
-      <Compile Include="EmbeddedResource.fs" />
-      <Compile Include="Misc.fs" />
-      <Compile Include="Runner.fs" />
-   </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Pervasives.fs"/>
+    <Compile Include="Option.fs"/>
+    <Compile Include="Dict.fs"/>
+    <Compile Include="ReadPoint.fs"/>
+    <Compile Include="Seq.fs"/>
+    <Compile Include="Array.fs"/>
+    <Compile Include="List.fs"/>
+    <Compile Include="String.fs"/>
+    <Compile Include="Vector2.fs"/>
+    <Compile Include="Vector3.fs"/>
+    <Compile Include="Vector4.fs"/>
+    <Compile Include="TryParse.fs"/>
+    <Compile Include="Parse.fs"/>
+    <Compile Include="EmbeddedResource.fs"/>
+    <Compile Include="Misc.fs"/>
+    <Compile Include="Runner.fs"/>
+  </ItemGroup>
 
 </Project>

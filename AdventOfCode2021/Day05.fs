@@ -4,14 +4,14 @@ open AdventOfCode.Common
 
 // https://adventofcode.com/2021/day/5
 
-module Day5 =
+module Day05 =
 
     [<AutoOpen>]
     module Day5Data =
 
         open System
 
-        let dataFilePath = "Data/Day5.data"
+        let dataFilePath = "Data/Day05.txt"
 
         type Point =
             { X : int

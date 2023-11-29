@@ -4,7 +4,7 @@ open AdventOfCode.Common
 
 // https://adventofcode.com/2021/day/2
 
-module Day2 =
+module Day02 =
 
 //    --- Day 2: Dive! ---
 //
@@ -40,7 +40,7 @@ module Day2 =
 //
 //    Calculate the horizontal position and depth you would have after following the planned course. What do you get if you multiply your final horizontal position by your final depth?
 
-    let dataFilePath = "Data/Day2.data"
+    let dataFilePath = "Data/Day02.txt"
 
     type Command =
         | Forward of int // horizonal

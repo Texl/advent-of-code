@@ -4,7 +4,7 @@ open AdventOfCode.Common
 
 // https://adventofcode.com/2021/day/3
 
-module Day3 =
+module Day03 =
 
 //    --- Day 3: Binary Diagnostic ---
 //
@@ -41,7 +41,7 @@ module Day3 =
 //
 //    Use the binary numbers in your diagnostic report to calculate the gamma rate and epsilon rate, then multiply them together. What is the power consumption of the submarine? (Be sure to represent your answer in decimal, not binary.)
 
-    let dataFilePath = "Data/Day3.data"
+    let dataFilePath = "Data/Day03.txt"
 
     let legalChars = set [ '0'; '1' ]
     

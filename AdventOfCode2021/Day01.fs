@@ -4,7 +4,7 @@ open AdventOfCode.Common
 
 // https://adventofcode.com/2021/day/1
 
-module Day1 =
+module Day01 =
 
 //    --- Day 1: Sonar Sweep ---
 //
@@ -52,7 +52,7 @@ module Day1 =
 //
 //    How many measurements are larger than the previous measurement?
 
-    let dataFilePath = "Data/Day1.data"
+    let dataFilePath = "Data/Day01.txt"
 
     let depths =
         dataFilePath
