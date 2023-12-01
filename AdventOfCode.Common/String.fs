@@ -14,3 +14,9 @@ module String =
     let split (separator: string) (str: string) = str.Split(separator)
     
     let trim (str : string) = str.Trim()
+    
+    let tails (str : string) =
+       seq {
+          for i in 0 .. str.Length - 1 do
+             yield str.Substring(i)
+       }

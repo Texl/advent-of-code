@@ -26,6 +26,11 @@ module TryParse =
         if m.Success
         then Some (m.Groups |> Seq.map (fun g -> g.Value) |> Seq.tail |> List.ofSeq)
         else None
+    let regexes pattern s =
+        let matches = Regex.Matches(s, pattern)
+        if matches.Count > 0
+        then Some (matches |> Seq.collect (fun m -> m.Groups |> Seq.map (fun g -> g.Value) |> Seq.tail) |> List.ofSeq)
+        else None
 
 
 [<AutoOpen>]
@@ -43,6 +48,7 @@ module TryParseAPs =
     let (|Float|_|) s : float option = TryParse.float s
     let (|Decimal|_|) s : decimal option = TryParse.decimal s
     let (|Regex|_|) (pattern : string) s : string list option = TryParse.regex pattern s
+    let (|Regexes|_|) (pattern : string) s : string list option = TryParse.regexes pattern s
 
     let (|StartsWith|_|) (prefix : string) (s : string) : string option =
         if s.StartsWith prefix
