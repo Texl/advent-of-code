@@ -11,7 +11,13 @@ module Runner =
       let maxDay = 30
       let maxPart = 5
       
-      type DRun = delegate of unit -> unit
+      type DPrewarm = delegate of unit -> unit
+      
+      type RunResult =
+         { Result : obj
+           ExpectedResult : obj option }
+      
+      type DRun = delegate of unit -> RunResult
 
       type Part =
          { Day : int
@@ -20,13 +26,13 @@ module Runner =
 
       type Day =
          { Day : int
-           Prewarm : DRun option
+           Prewarm : DPrewarm option
            Parts : Part list }
 
       let tryGetPrewarm (t : Type) =
          t.GetMethod($"prewarm", BindingFlags.Public ||| BindingFlags.Static)
          |> Option.ofObj
-         |> Option.map (fun methodInfo -> methodInfo.CreateDelegate<DRun>()) 
+         |> Option.map (fun methodInfo -> methodInfo.CreateDelegate<DPrewarm>()) 
       
       type DGetResult = delegate of unit -> obj
       
@@ -53,20 +59,8 @@ module Runner =
 
                            return
                               DRun(fun () ->
-                                 let result = getResult ()
-
-                                 getExpectedResult
-                                 |> Option.iter (fun f ->
-                                    let expectedResult = f ()
-                                    if result.Equals(expectedResult) then
-                                       Console.ForegroundColor <- ConsoleColor.Green
-                                       printf "OK "
-                                    else
-                                       Console.ForegroundColor <- ConsoleColor.Red
-                                       printf "X "
-                                    Console.ResetColor())
-
-                                 printfn $"%A{result}")
+                                 { Result = getResult ()
+                                   ExpectedResult = getExpectedResult |> Option.map (fun f -> f ())  })
                         }
                         |> Option.defaultWith (fun () -> failwith $"couldn't create delegate for day {day} part {part}")
                }
@@ -89,17 +83,30 @@ module Runner =
          [ 1 .. maxDay ]
          |> List.choose (tryGetDay assembly)
 
-      let runPrewarm day (prewarm : DRun) =
-         printfn $"\nDay {day} prewarm"
+      let runPrewarm day (prewarm : DPrewarm) =
          let stopwatch = Stopwatch.StartNew()
          prewarm.Invoke()
+         stopwatch.Stop()
+         printfn $"\nDay {day} prewarm"
          printfn $"{stopwatch.ElapsedMilliseconds}ms"
       
       let runPart (part : Part) =
-         printfn $"\nDay {part.Day}, Part {part.Part}"
          let stopwatch = Stopwatch.StartNew()
-         part.Run.Invoke()
-         printfn $"{stopwatch.ElapsedMilliseconds}ms"
+         let runResult = part.Run.Invoke()
+         stopwatch.Stop()
+         printfn $"\nDay {part.Day}, Part {part.Part}"
+         
+         runResult.ExpectedResult
+         |> Option.iter (fun expectedResult ->
+            if runResult.Result.Equals(expectedResult) then
+               Console.ForegroundColor <- ConsoleColor.Green
+               printf "OK "
+            else
+               Console.ForegroundColor <- ConsoleColor.Red
+               printf "X "
+            Console.ResetColor())
+         
+         printfn $"%A{runResult.Result} ({stopwatch.ElapsedMilliseconds}ms)"
       
       let runDay (day : Day) =
          day.Prewarm
