@@ -18,6 +18,7 @@
     <Compile Include="Vector2.fs"/>
     <Compile Include="Vector3.fs"/>
     <Compile Include="Vector4.fs"/>
+    <Compile Include="AABB.fs" />
     <Compile Include="TryParse.fs"/>
     <Compile Include="Parse.fs"/>
     <Compile Include="EmbeddedResource.fs"/>
