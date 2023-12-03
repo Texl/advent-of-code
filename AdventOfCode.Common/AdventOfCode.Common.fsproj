@@ -14,6 +14,7 @@
     <Compile Include="Array.fs"/>
     <Compile Include="List.fs"/>
     <Compile Include="String.fs"/>
+    <Compile Include="Regex.fs" />
     <Compile Include="Vector2.fs"/>
     <Compile Include="Vector3.fs"/>
     <Compile Include="Vector4.fs"/>

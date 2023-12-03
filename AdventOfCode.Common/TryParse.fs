@@ -2,6 +2,7 @@
 
 [<RequireQualifiedAccess>]
 module TryParse =
+    open System
     open System.Text.RegularExpressions
 
     let private tryParseWith f s =
@@ -21,11 +22,19 @@ module TryParse =
     let float32 s = tryParseWith FSharp.Core.float32.TryParse s
     let float s = tryParseWith FSharp.Core.float.TryParse s
     let decimal s = tryParseWith FSharp.Core.decimal.TryParse s
+
+    let enum<'a when 'a : (new: unit -> 'a) and 'a : struct and 'a :> ValueType> (s : string) =
+        tryParseWith Enum.TryParse<'a> s
+        
+    let enumI<'a when 'a : (new: unit -> 'a) and 'a : struct and 'a :> ValueType> (s : string) =
+        tryParseWith (fun (s : string) -> Enum.TryParse<'a>(s, ignoreCase=true)) s
+
     let regex pattern s =
         let m = Regex.Match(s, pattern)
         if m.Success
         then Some (m.Groups |> Seq.map (fun g -> g.Value) |> Seq.tail |> List.ofSeq)
         else None
+
     let regexes pattern s =
         let matches = Regex.Matches(s, pattern)
         if matches.Count > 0
@@ -47,7 +56,12 @@ module TryParseAPs =
     let (|Float32|_|) s : float32 option = TryParse.float32 s
     let (|Float|_|) s : float option = TryParse.float s
     let (|Decimal|_|) s : decimal option = TryParse.decimal s
+
+    let (|Enum|_|) s : 'a option = TryParse.enum s
+    let (|EnumI|_|) s : 'a option = TryParse.enumI s
+
     let (|Regex|_|) (pattern : string) s : string list option = TryParse.regex pattern s
+
     let (|Regexes|_|) (pattern : string) s : string list option = TryParse.regexes pattern s
 
     let (|StartsWith|_|) (prefix : string) (s : string) : string option =
