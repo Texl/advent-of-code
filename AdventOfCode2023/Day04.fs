@@ -70,12 +70,12 @@ namespace AdventOfCode2023
                v)
             
          let getTotalCardsWon card =
-            memoize card (fun () ->
-               let rec getTotalCardsWonRec card =
+            let rec getTotalCardsWonRec card =
+               memoize card (fun () ->
                   let cardsWon = cardNumberToWonCards |> Map.find card.Number
-                  cardsWon.Length + (cardsWon |> List.sumBy getTotalCardsWonRec)
-               
-               getTotalCardsWonRec card)
+                  cardsWon.Length + (cardsWon |> List.sumBy getTotalCardsWonRec))
+              
+            getTotalCardsWonRec card
          
          let wonCards =
             cards
