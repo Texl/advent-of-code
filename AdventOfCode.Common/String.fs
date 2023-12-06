@@ -2,6 +2,8 @@
 
 [<RequireQualifiedAccess>]
 module String =
+    open System
+    
     [<Literal>]
     let empty = ""
 
@@ -11,7 +13,7 @@ module String =
 
     let replace (target: string) (replacement: string) (str: string) = str.Replace(target, replacement)
 
-    let split (separator: string) (str: string) = str.Split(separator)
+    let split (separator: string) (str: string) = str.Split(separator, StringSplitOptions.RemoveEmptyEntries)
     
     let trim (str : string) = str.Trim()
     
