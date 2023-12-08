@@ -31,8 +31,6 @@ namespace AdventOfCode2023
                seedChunk |> parseSeeds,
                mappingChunks |> List.map parseMapping
             | _ -> raise invalidInput
-         
-      let w f x = f x x
 
       let mapFwd =
          mappings
