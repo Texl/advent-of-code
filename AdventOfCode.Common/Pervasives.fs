@@ -23,8 +23,16 @@ module Math =
    let inline modulo a b = (a % b + b) % b
 
    // greatest common divisor
-   let rec gcd a b = if b = 0L then a else gcd b (a % b)
+   let inline gcd a b =
+      let zero = LanguagePrimitives.GenericZero
+        
+      let rec _gcd a b =
+         if b = zero 
+         then a
+         else _gcd b (a % b)
 
+      _gcd a b
+        
    // least common multiple
    let inline lcm a b = a * b / gcd a b
 
