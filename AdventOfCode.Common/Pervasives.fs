@@ -17,6 +17,7 @@ module Pervasives =
 
    let inline w f x = f x x
 
+
 [<AutoOpen>]
 module Math =
    let inline modulo a b = (a % b + b) % b
@@ -26,3 +27,11 @@ module Math =
 
    // least common multiple
    let inline lcm a b = a * b / gcd a b
+
+
+[<AutoOpen>]
+module Validation =
+   let inline checkNonNull argName arg =
+      match box arg with
+      | null -> nullArg argName
+      | _ -> ()

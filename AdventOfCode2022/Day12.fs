@@ -50,8 +50,8 @@ module Day12 =
 
     let isTraversable (fromCell : GridCell) (toCell : GridCell) = 
         match fromCell.Type, toCell.Type with
-        | Start _, Elevation 0 -> true
-        | Elevation 25, End _ -> true
+        | Start, Elevation 0 -> true
+        | Elevation 25, End -> true
         | Elevation elevFrom, Elevation elevTo -> elevTo - elevFrom <= 1
         | _ -> false
                     
