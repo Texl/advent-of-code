@@ -17,11 +17,10 @@ let processGrid allowedDiffs (grid : char list list) =
       index,
       grid
       |> List.splitAt index
-      ||> Seq.map2 (fun front back ->
+      |> fun (front, back) ->
          (front |> List.rev, back)
-         ||> Seq.map2 (fun a b -> if a <> b then 1 else 0)
-         |> Seq.sum)
-      |> Seq.sum)
+         ||> Seq.map2 (Seq.map2 (fun a b -> if a <> b then 1 else 0))
+      |> Seq.sumBy Seq.sum)
    |> Seq.filter (fun (_, diffs) -> diffs = allowedDiffs)
    |> Seq.map fst
    |> Seq.tryExactlyOne
