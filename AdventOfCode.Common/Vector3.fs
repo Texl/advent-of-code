@@ -18,6 +18,11 @@ module Vector3Types =
               Y = y
               Z = z }
         
+        static member (~-) (a : Vector3) =
+            { X = -a.X
+              Y = -a.Y
+              Z = -a.Z }
+
         static member (+) (a : Vector3, b : Vector3) =
             { X = a.X + b.X
               Y = a.Y + b.Y
@@ -27,6 +32,17 @@ module Vector3Types =
             { X = a.X - b.X
               Y = a.Y - b.Y
               Z = a.Z - b.Z }
+
+        static member (*) (a : int64, b : Vector3) =
+            { X = a * b.X
+              Y = a * b.Y
+              Z = a * b.Z }
+
+        static member (*) (a : Vector3, b : int64) =
+            { X = a.X * b
+              Y = a.Y * b
+              Z = a.Z * b }
+
 
 [<RequireQualifiedAccess>]
 module Vector3 =
