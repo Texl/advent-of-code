@@ -28,41 +28,23 @@ type Address = { V : Vector2i; D : Direction; M : int }
 [<Struct>]
 type GraphNode = { mutable Visited : bool; mutable Distance : int }
 
-let grid : Grid = Grid.Parse data
+type Graph(height : int, width : int, minMoves : int, maxMoves : int) =
+   let numDirections = 4
+   let nodes = { Visited = false; Distance = Int32.MaxValue } |> Array4D.create height width numDirections (maxMoves + 1)
+   member this.SetDistance(a : Address, distance : int) = nodes[a.V.R, a.V.C, int a.D, a.M].Distance <- distance
+   member this.SetVisited(a : Address, visited : bool) = nodes[a.V.R, a.V.C, int a.D, a.M].Visited <- visited
+   member this.IsVisited(a : Address) : bool = nodes[a.V.R, a.V.C, int a.D, a.M].Visited
+   member this.IsNotVisited(a : Address) : bool = this.IsVisited(a) |> not
+   member this.GetDistance(a : Address) : int = nodes[a.V.R, a.V.C, int a.D, a.M].Distance
 
-let solve (minMoves : int) (maxMoves : int) (grid : Grid) =
-   let nodes =
-      { Visited = false; Distance = Int32.MaxValue }
-      |> Array4D.create grid.Height grid.Width 4 (maxMoves + 1)
-
-   let setDistance (a : Address) distance = nodes[a.V.R, a.V.C, int a.D, a.M].Distance <- distance
-
-   let setVisited (a : Address) visited = nodes[a.V.R, a.V.C, int a.D, a.M].Visited <- visited
-
-   let queue = PriorityQueue<Address, int>()
-
-   for dir in allDirections do
-      queue.Enqueue({ V = grid.Start; D = dir; M = 0 }, 0)
-      setDistance { V = grid.Start; D = dir; M = 0 } 0
-
-   let isVisited (a : Address) = nodes[a.V.R, a.V.C, int a.D, a.M].Visited
-   
-   let isNotVisited = isVisited >> not
-
-   let getDistance (a : Address) = nodes[a.V.R, a.V.C, int a.D, a.M].Distance
-
-   let getMinDistance v =
-      [ for dir in allDirections do
-           for moves in 0..maxMoves do
-              getDistance { V = v; D = dir; M = moves } ]
-      |> Seq.min
-
-   let isValid (a : Address) =
-      0 <= a.V.R && a.V.R < grid.Height &&
-      0 <= a.V.C && a.V.C < grid.Width &&
+   member this.IsValid(a : Address) : bool =
+      0 <= a.V.R && a.V.R < height &&
+      0 <= a.V.C && a.V.C < width &&
+      // direction always valid
       0 <= a.M && a.M <= maxMoves
-
-   let getAdjacent ({ V = v; D = dir; M = moves } : Address) : Address[] =
+   
+   member this.GetAdjacent(a : Address) =
+      let { V = v; D = dir; M = moves } = a
       let dirs =
          if moves < minMoves then
             [| dir, moves + 1 |]
@@ -81,29 +63,39 @@ let solve (minMoves : int) (maxMoves : int) (grid : Grid) =
             | Direction.S -> Vector2i.UnitR
             | Direction.E -> Vector2i.UnitC
             | _ -> failwith "Invalid direction"
-    
-         { V = v + delta
-           D = dir
-           M = moves })
+         { V = v + delta; D = dir; M = moves })
 
+   member this.GetMinDistanceTo(v : Vector2i) =
+      [ for dir in allDirections do
+           for moves in 0..maxMoves do
+              this.GetDistance({ V = v; D = dir; M = moves }) ]
+      |> Seq.min
+
+let grid : Grid = Grid.Parse data
+
+let solve (minMoves : int) (maxMoves : int) (grid : Grid) =
+   let graph = Graph(grid.Width, grid.Height, minMoves, maxMoves)
+
+   let queue = PriorityQueue<Address, int>()
+
+   for dir in allDirections do
+      queue.Enqueue({ V = grid.Start; D = dir; M = 0 }, 0)
+      graph.SetDistance({ V = grid.Start; D = dir; M = 0 }, 0)
 
    let rec visitNext () =
       match queue.TryDequeue() with
-      | false, _, _ ->
-         getMinDistance grid.Goal
-      | true, node, _ when node.V = grid.Goal ->
-         getMinDistance grid.Goal
-      | true, node, _ when isVisited node ->
-         visitNext ()
+      | false, _, _ -> graph.GetMinDistanceTo(grid.Goal)
+      | true, node, _ when node.V = grid.Goal -> graph.GetMinDistanceTo(grid.Goal)
+      | true, node, _ when graph.IsVisited(node) -> visitNext ()
       | true, node, _ ->
-         setVisited node true
+         graph.SetVisited(node, true)
 
-         for neighbor in node |> getAdjacent do
-            if neighbor |> isValid && neighbor |> isNotVisited then
-               let estDist = getDistance node + grid.Cost neighbor.V
+         for neighbor in graph.GetAdjacent(node) do
+            if graph.IsValid(neighbor) && graph.IsNotVisited(neighbor) then
+               let estDist = graph.GetDistance(node) + grid.Cost(neighbor.V)
 
-               if estDist < getDistance neighbor then
-                  setDistance neighbor estDist
+               if estDist < graph.GetDistance(neighbor) then
+                  graph.SetDistance(neighbor, estDist)
                   queue.Enqueue(neighbor, estDist)
 
          visitNext ()

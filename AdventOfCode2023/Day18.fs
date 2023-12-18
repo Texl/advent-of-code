@@ -25,29 +25,28 @@ let digPlan1, digPlan2 =
       | x -> raiseInvalidInput x)
    |> Seq.unzip
 
-let findArea digPlan =
-   let verts =
-      (Vector2.Zero, digPlan)
-      ||> Seq.scan (fun s (dir, dist) ->
-         let delta = 
-            match dir with
-            | N -> -Vector2.UnitR
-            | W -> -Vector2.UnitC
-            | S -> Vector2.UnitR
-            | E -> Vector2.UnitC
-         s + dist * delta)
-      |> List.ofSeq
+let getDigPath digPlan = 
+   (Vector2.Zero, digPlan)
+   ||> Seq.scan (fun s (dir, dist) ->
+      let delta = 
+         match dir with
+         | N -> -Vector2.UnitR
+         | W -> -Vector2.UnitC
+         | S -> Vector2.UnitR
+         | E -> Vector2.UnitC
+      s + dist * delta)
+   |> Array.ofSeq
 
-   let segments = verts |> List.pairwise
+// (Shoelace formula)[https://en.wikipedia.org/wiki/Shoelace_formula]
+// (Pick's theorem)[https://en.wikipedia.org/wiki/Pick%27s_theorem]
+let findDigPathArea (digPathVerts : Vector2[]) =
+   let pathSegments = digPathVerts |> Array.pairwise
+   let interiorArea = (pathSegments |> Seq.sumBy (fun (p1, p2) -> p1.C * p2.R - p2.C * p1.R)) / 2L
+   let perimeter = pathSegments |> Seq.sumBy Vector2.ManhattanDistance
+   abs interiorArea + perimeter / 2L + 1L
 
-   let interiorArea = abs (segments |> Seq.sumBy (fun (p1, p2) -> p1.C * p2.R - p2.C * p1.R)) / 2L
-
-   let perimeter = segments |> Seq.sumBy Vector2.ManhattanDistance
-
-   interiorArea + perimeter / 2L + 1L
-
-let part1 () = digPlan1 |> findArea
-let part2 () = digPlan2 |> findArea
+let part1 () = digPlan1 |> getDigPath |> findDigPathArea
+let part2 () = digPlan2 |> getDigPath |> findDigPathArea
 
 let part1Expected = 92_758L
 
