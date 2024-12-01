@@ -1,0 +1,31 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net9.0</TargetFramework>
+    <LangVersion>preview</LangVersion>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Include="Pervasives.fs"/>
+    <Compile Include="EmbeddedResource.fs"/>
+    <Compile Include="Func.fs" />
+    <Compile Include="Option.fs"/>
+    <Compile Include="Reflection.fs" />
+    <Compile Include="Regex.fs" />
+    <Compile Include="String.fs"/>
+    <Compile Include="Parsing.fs" />
+    <Compile Include="Validation.fs" />
+    <Compile Include="Collections\Array.fs" />
+    <Compile Include="Collections\Dict.fs" />
+    <Compile Include="Collections\List.fs" />
+    <Compile Include="Collections\ReadPoint.fs" />
+    <Compile Include="Collections\Seq.fs" />
+    <Compile Include="Math\Math.fs" />
+    <Compile Include="Math\Vector2.fs" />
+    <Compile Include="Math\Vector3.fs" />
+    <Compile Include="Math\Vector4.fs" />
+    <Compile Include="Math\AABB.fs" />
+    <Compile Include="Runner.fs"/>
+  </ItemGroup>
+
+</Project>

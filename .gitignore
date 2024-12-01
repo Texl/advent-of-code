@@ -452,3 +452,13 @@ $RECYCLE.BIN/
 !.vscode/tasks.json
 !.vscode/launch.json
 !.vscode/extensions.json
+
+##
+## Local scripts
+##
+.scripts/*
+
+##
+## Advent of Code Data
+##
+/**/Data/*.txt
