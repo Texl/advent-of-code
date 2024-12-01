@@ -1,6 +1,8 @@
 ﻿Microsoft Visual Studio Solution File, Format Version 12.00
 Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "AdventOfCode.Common", "AdventOfCode.Common\AdventOfCode.Common.fsproj", "{85E1B3A7-E3FE-4841-8774-523BE5220617}"
 EndProject
+Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "AdventOfCode2021", "AdventOfCode2021\AdventOfCode2021.fsproj", "{9A3CF813-90B2-4BA5-845D-4A1E592D5CE6}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -11,5 +13,8 @@ Global
 		{85E1B3A7-E3FE-4841-8774-523BE5220617}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{85E1B3A7-E3FE-4841-8774-523BE5220617}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{85E1B3A7-E3FE-4841-8774-523BE5220617}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9A3CF813-90B2-4BA5-845D-4A1E592D5CE6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9A3CF813-90B2-4BA5-845D-4A1E592D5CE6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9A3CF813-90B2-4BA5-845D-4A1E592D5CE6}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
