@@ -37,3 +37,6 @@ module Vector2Types =
       static member inline op_Implicit(v : Vector2i) : Vector2 = { R = int64 v.R; C = int64 v.C }
       static member inline Distance(a : Vector2, b : Vector2) = (b - a).Magnitude
       static member inline ManhattanDistance(a : Vector2, b : Vector2) = abs (b.C - a.C) + abs (b.R - a.R)
+
+   let vec2i r c : Vector2i = { R = r; C = c }
+   let vec2 r c : Vector2 = { R = r; C = c }
