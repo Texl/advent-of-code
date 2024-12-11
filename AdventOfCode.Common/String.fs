@@ -15,6 +15,8 @@ module String =
 
    let split (separator : string) (str : string) = str.Split(separator, StringSplitOptions.RemoveEmptyEntries)
 
+   let splitAt (index : int) (str : string) = str.Substring(0, index), str.Substring(index, str.Length - index) 
+
    let trim (str : string) = str.Trim()
 
    let tails (str : string) =
