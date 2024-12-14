@@ -45,7 +45,7 @@ let part1 () =
 let part2 () =
    let inputSteps = 26501365L
 
-   let steps = walk (fun (x, y) -> grid[modulo y h][modulo x w]) (w / 2, h / 2)
+   let steps = walk (fun (x, y) -> grid[y %% h][x %% w]) (w / 2, h / 2)
 
    let crossings = Seq.choosei (fun i e -> if i % w = (w / 2 - 1) then Some e else None)
 

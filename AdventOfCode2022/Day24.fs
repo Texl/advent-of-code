@@ -110,8 +110,8 @@ module Day24 =
 
         let step (map : Map) =
             let wrap position =
-                { R = modulo (position.R - 1L) (map.Dimensions.R - 2L) + 1L
-                  C = modulo (position.C - 1L) (map.Dimensions.C - 2L) + 1L }
+                { R = (position.R - 1L) %% (map.Dimensions.R - 2L) + 1L
+                  C = (position.C - 1L) %% (map.Dimensions.C - 2L) + 1L }
             
             let newBlizzards =
                 map.Blizzards

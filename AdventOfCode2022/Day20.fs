@@ -8,8 +8,6 @@ module Day20 =
 
     let input = data |> Seq.map int64 |> Array.ofSeq
     
-    let inline modulo a b = (a % b + b) % b
-
     let fPermute (origin : int) (destination : int) (cur : int) =
         if cur = origin then
             destination
@@ -32,7 +30,7 @@ module Day20 =
         for iteration in 1..iterations do
             for index in 0..len - 1 do
                 let origin = working |> Array.findIndex (fun elt -> elt.OriginalIndex = index)
-                let destination = int (modulo (int64 origin + working[origin].Offset) (int64 (len - 1)))
+                let destination = int ((int64 origin + working[origin].Offset) %% (int64 (len - 1)))
                 working <- working |> Array.permute (fPermute origin destination)
 
         working |> Array.map (fun elt -> elt.Keyed)
@@ -43,7 +41,7 @@ module Day20 =
         let coordinates =
             let zeroIndex = mixed |> Array.findIndex ((=) 0L)
             [| 1000; 2000; 3000 |]
-            |> Array.sumBy (fun zeroOffset -> mixed[modulo (zeroIndex + zeroOffset) mixed.Length])
+            |> Array.sumBy (fun zeroOffset -> mixed[(zeroIndex + zeroOffset) %% mixed.Length])
 
         printfn $"%d{coordinates}"
 
@@ -53,6 +51,6 @@ module Day20 =
         let coordinates =
             let zeroIndex = mixed |> Array.findIndex ((=) 0L)
             [| 1000; 2000; 3000 |]
-            |> Array.sumBy (fun zeroOffset -> mixed[modulo (zeroIndex + zeroOffset) mixed.Length])
+            |> Array.sumBy (fun zeroOffset -> mixed[(zeroIndex + zeroOffset) %% mixed.Length])
 
         printfn $"%d{coordinates}"

@@ -2,8 +2,9 @@
 
 [<AutoOpen>]
 module Math =
-   let inline modulo a b = (a % b + b) % b
-
+   // modulo operator that works for negative numbers
+   let inline (%%) a b = (a % b + b) % b
+   
    // greatest common divisor
    let inline gcd a b =
       let zero = LanguagePrimitives.GenericZero

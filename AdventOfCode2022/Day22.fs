@@ -31,8 +31,6 @@ module Day22 =
         | TurnLeft
         | TurnRight
         
-    let inline modulo a b = (a % b + b) % b
-
     let parseInput (linkMapCells : MapCell list list -> Map<int, MapCell list list> -> Map<int, Map<Vector2, MapCell>> -> Map<Vector2, MapCell> -> unit) =
         let parseMap lines classifyCubeFace =
             let mapCells =
@@ -50,7 +48,7 @@ module Day22 =
                             
                         let cubeFace = classifyCubeFace r c el
 
-                        let cr, cc = modulo r el, modulo c el
+                        let cr, cc = r %% el, c %% el
 
                         let faceCoords = { R = cr; C = cc }
                                             
@@ -151,7 +149,7 @@ module Day22 =
                             
                         let cubeFace = classifyCubeFace r c el
 
-                        let cr, cc = modulo r el, modulo c el
+                        let cr, cc = r %% el, c %% el
 
                         let faceCoords = { R = cr; C = cc }
                                             
@@ -289,8 +287,8 @@ module Day22 =
         let height, width = mapCells.Length, mapCells.Head.Length
 
         let wrapCoords coords =
-            { R = int64 <| modulo (int coords.R) height
-              C = int64 <| modulo (int coords.C) width }
+            { R = int64 <| (int coords.R) %% height
+              C = int64 <| (int coords.C) %% width }
 
         faceToMapCells
         |> Map.filter (fun k _ -> k <> -1)
@@ -397,8 +395,8 @@ module Day22 =
                             faceCoords.C >= el
                         
                         let wrapCoords coords =
-                            { R = int64 <| modulo (int coords.R) el
-                              C = int64 <| modulo (int coords.C) el }
+                            { R = int64 <| (int coords.R) %% el
+                              C = int64 <| (int coords.C) %% el }
 
                         let rec search (originCell : MapCell) facing translation =
                             let newFaceCoords = originCell.FaceCoords + translation
